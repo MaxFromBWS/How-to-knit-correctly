@@ -24,6 +24,7 @@ const authCloseBtn = document.getElementById("auth-close-btn");
 const questionModal = document.getElementById("question-modal");
 const questionOpenBtn = document.getElementById("question-open-btn");
 const questionCloseBtn = document.getElementById("question-close-btn");
+const scrollTopBtn = document.getElementById("scroll-top-btn");
 const questionForm = document.getElementById("question-form");
 const questionFormMessage = document.getElementById("question-form-message");
 const qNameInput = document.getElementById("q-name");
@@ -401,6 +402,18 @@ if (questionModal) {
   questionModal.addEventListener("click", (event) => {
     if (event.target === questionModal) closeQuestionModal();
   });
+}
+
+if (scrollTopBtn) {
+  scrollTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  const toggleScrollTopButton = () => {
+    const shouldShow = window.scrollY > 320;
+    scrollTopBtn.classList.toggle("hidden", !shouldShow);
+  };
+  window.addEventListener("scroll", toggleScrollTopButton, { passive: true });
+  toggleScrollTopButton();
 }
 
 if (questionForm && questionFormMessage) {

@@ -257,6 +257,7 @@ h3 { margin: 0 0 0.4rem; }
 }
 
 .section { padding: 2.4rem 0; }
+.section[id] { scroll-margin-top: 88px; }
 .section-soft { background: #f4ece3; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 
 .why-knit p { margin: 0.5rem 0 0; color: var(--muted); }
@@ -746,6 +747,11 @@ h3 { margin: 0 0 0.4rem; }
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+.scroll-top-btn {
+  left: 1rem;
+  right: auto;
 }
 
 .question-modal {
