@@ -26,6 +26,8 @@ const questionOpenBtn = document.getElementById("question-open-btn");
 const questionCloseBtn = document.getElementById("question-close-btn");
 const questionForm = document.getElementById("question-form");
 const questionFormMessage = document.getElementById("question-form-message");
+const qNameInput = document.getElementById("q-name");
+const qContactInput = document.getElementById("q-contact");
 const threadContactInput = document.getElementById("thread-contact");
 const threadLoadBtn = document.getElementById("thread-load-btn");
 const threadList = document.getElementById("thread-list");
@@ -35,6 +37,7 @@ const reviewsPrevBtn = document.getElementById("reviews-prev-btn");
 const reviewsNextBtn = document.getElementById("reviews-next-btn");
 const passwordToggleButtons = document.querySelectorAll(".password-toggle-btn");
 let failedLoginAttempts = 0;
+let isThreadExpanded = false;
 
 function sanitizeEmail(value) {
   return String(value || "").trim().toLowerCase().normalize("NFKC");
@@ -57,6 +60,13 @@ function formatDateTime(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
   return date.toLocaleString("ru-RU");
+}
+
+function applyThreadViewMode() {
+  if (!threadList || !threadLoadBtn) return;
+  threadList.classList.toggle("thread-list-expanded", isThreadExpanded);
+  threadList.classList.toggle("thread-list-collapsed", !isThreadExpanded);
+  threadLoadBtn.textContent = isThreadExpanded ? "Свернуть переписку" : "Показать переписку";
 }
 
 function saveSession(token, user) {
@@ -333,11 +343,31 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
 
 function openQuestionModal() {
   if (questionModal) questionModal.classList.remove("hidden");
-  if (!getSession()?.token && questionFormMessage) {
+  isThreadExpanded = false;
+  applyThreadViewMode();
+  const session = getSession();
+  const isLoggedIn = !!session?.token;
+
+  if (!isLoggedIn && questionFormMessage) {
     questionFormMessage.textContent = "Для отправки вопроса и просмотра ответов выполните вход.";
   }
-  const session = getSession();
-  const fallbackContact = threadContactInput?.value || session?.user?.email || "";
+
+  if (qNameInput) {
+    if (isLoggedIn) {
+      qNameInput.value = session?.user?.name || "";
+      qNameInput.readOnly = true;
+    } else {
+      qNameInput.readOnly = false;
+    }
+  }
+
+  if (qContactInput) {
+    if (isLoggedIn && !qContactInput.value.trim()) {
+      qContactInput.value = session?.user?.email || "";
+    }
+  }
+
+  const fallbackContact = threadContactInput?.value || qContactInput?.value || session?.user?.email || "";
   if (threadContactInput && fallbackContact) {
     threadContactInput.value = fallbackContact;
     void renderQuestionThreadByContact(fallbackContact);
@@ -360,8 +390,9 @@ if (questionModal) {
 if (questionForm && questionFormMessage) {
   questionForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const name = document.getElementById("q-name")?.value.trim() || "";
-    const contact = document.getElementById("q-contact")?.value.trim() || "";
+    const session = getSession();
+    const name = (session?.user?.name || qNameInput?.value || "").trim();
+    const contact = (qContactInput?.value || session?.user?.email || "").trim();
     const message = document.getElementById("q-message")?.value.trim() || "";
 
     if (!name || !contact || !message) {
@@ -404,6 +435,7 @@ async function renderQuestionThreadByContact(rawContact) {
 
   if (!questions.length) {
     threadList.innerHTML = "<p>По этому контакту пока нет вопросов.</p>";
+    applyThreadViewMode();
     return;
   }
 
@@ -432,13 +464,20 @@ async function renderQuestionThreadByContact(rawContact) {
       `;
     })
     .join("");
+  applyThreadViewMode();
 }
 
 if (threadLoadBtn) {
   threadLoadBtn.addEventListener("click", async () => {
-    await renderQuestionThreadByContact(threadContactInput?.value || "");
+    isThreadExpanded = !isThreadExpanded;
+    applyThreadViewMode();
+    if (!threadList?.textContent?.trim()) {
+      await renderQuestionThreadByContact(threadContactInput?.value || "");
+    }
   });
 }
+
+applyThreadViewMode();
 
 function openAuthModal() {
   if (authModal) authModal.classList.remove("hidden");

@@ -541,12 +541,33 @@ h3 { margin: 0 0 0.4rem; }
 
 .thread-list {
   margin-top: 0.65rem;
-  max-height: 220px;
-  overflow: auto;
+  transition: max-height 0.22s ease;
   border: 1px solid var(--line);
   border-radius: 0.75rem;
   padding: 0.6rem;
   background: #fff;
+}
+
+.thread-list.thread-list-collapsed {
+  max-height: 120px;
+  overflow: hidden;
+  position: relative;
+}
+
+.thread-list.thread-list-collapsed::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 44px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff 78%);
+  pointer-events: none;
+}
+
+.thread-list.thread-list-expanded {
+  max-height: 320px;
+  overflow: auto;
 }
 
 .thread-item {
@@ -735,6 +756,7 @@ h3 { margin: 0 0 0.4rem; }
   display: grid;
   place-items: center;
   padding: 1rem;
+  overflow-y: auto;
 }
 
 .question-modal-card {
@@ -744,6 +766,8 @@ h3 { margin: 0 0 0.4rem; }
   border: 1px solid var(--line);
   padding: 1rem;
   position: relative;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
 }
 
 .question-modal-card form {
