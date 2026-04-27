@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админка — Анна Вяжет</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="admin-wrap">
+    <section class="admin-card" id="login-view">
+      <h1>Вход в админку</h1>
+      <p>Введите логин и пароль для доступа к панели.</p>
+      <form id="login-form">
+        <label for="email">Email</label>
+        <input id="email" type="email" required placeholder="admin@gmail.com">
+        <label for="password">Пароль</label>
+        <input id="password" type="password" required placeholder="••••••">
+        <button type="submit">Войти</button>
+      </form>
+      <p id="login-message" class="msg"></p>
+      <a class="back-link" href="index.html">← На сайт</a>
+    </section>
+
+    <section class="admin-card hidden" id="panel-view">
+      <div class="panel-top-actions">
+        <a class="back-link" href="index.html">← Назад на сайт</a>
+      </div>
+      <h2>Панель управления</h2>
+      <p>Вы вошли как администратор.</p>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span>Зарегистрировано пользователей</span>
+          <strong id="users-count">0</strong>
+        </div>
+        <div class="stat-box">
+          <span>Новых вопросов Анне</span>
+          <strong id="questions-count">0</strong>
+        </div>
+      </div>
+
+      <h3>Пользователи и контакты</h3>
+      <div id="users-list" class="list-block"></div>
+
+      <h3>Сообщения и вопросы</h3>
+      <div id="questions-list" class="list-block"></div>
+      <button id="logout-btn" class="logout-btn">Выйти</button>
+    </section>
+  </main>
+
+  <div id="reply-modal" class="reply-modal hidden" role="dialog" aria-modal="true" aria-labelledby="reply-modal-title">
+    <div class="reply-modal-card">
+      <button id="reply-modal-close-btn" class="reply-modal-close-btn" type="button" aria-label="Закрыть">×</button>
+      <h3 id="reply-modal-title">Ответ пользователю</h3>
+      <textarea id="reply-modal-input" rows="5" placeholder="Введите текст ответа..."></textarea>
+      <button id="reply-modal-send-btn" type="button">Отправить</button>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
