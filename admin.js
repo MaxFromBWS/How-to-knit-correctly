@@ -1,5 +1,5 @@
 const PUBLIC_SESSION_KEY = "anna_public_session";
-const API_BASE = "";
+const API_BASE = String(window.APP_CONFIG?.API_BASE || "").trim();
 
 const loginView = document.getElementById("login-view");
 const panelView = document.getElementById("panel-view");
@@ -52,10 +52,18 @@ async function apiRequest(path, options = {}) {
   if (session?.token) {
     headers.Authorization = `Bearer ${session.token}`;
   }
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers,
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers,
+    });
+  } catch {
+    if (window.location.hostname.includes("github.io") && !API_BASE) {
+      throw new Error("Сервер API не настроен для GitHub Pages. Укажите APP_CONFIG.API_BASE в config.js.");
+    }
+    throw new Error("Сервер недоступен. Проверьте backend.");
+  }
   let payload = {};
   try {
     payload = await response.json();

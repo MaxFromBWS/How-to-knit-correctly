@@ -15,9 +15,22 @@ const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@gmail.com").toLowerCase()
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "240426";
 const REQUIRE_EMAIL_CONFIRMATION =
   String(process.env.REQUIRE_EMAIL_CONFIRMATION || "false") === "true";
+const CORS_ORIGINS = String(process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 const DB_PATH = path.join(__dirname, "data", "db.json");
 
-app.use(cors());
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+      if (!CORS_ORIGINS.length) return callback(null, true);
+      if (CORS_ORIGINS.includes(origin)) return callback(null, true);
+      return callback(new Error("CORS blocked"));
+    },
+  })
+);
 app.use(express.json());
 app.use(express.static(__dirname));
 
