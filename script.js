@@ -121,6 +121,22 @@ async function apiRequest(path, options = {}) {
     payload = {};
   }
   if (!response.ok) {
+    const errorText = String(payload.error || "").toLowerCase();
+    const isSessionError = response.status === 401 && (
+      errorText.includes("сессия") ||
+      errorText.includes("авторизац") ||
+      errorText.includes("пользователь не найден")
+    );
+    if (isSessionError) {
+      clearSession();
+      renderAuthSessionStatus();
+      renderAuthTrigger();
+      if (loginPublicMessage) {
+        loginPublicMessage.textContent = "Сессия истекла. Войдите снова.";
+      }
+      openAuthModal();
+      throw new Error("Сессия истекла. Выполните вход снова.");
+    }
     throw new Error(payload.error || "Ошибка запроса.");
   }
   return payload;
